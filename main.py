@@ -2,7 +2,7 @@ import re
 from collections import defaultdict 
 
 #include the sample.conll file in the working directory, as file paths are relative
-conll_file = open('../sample.conll','r')
+conll_file = open('sample.conll','r')
 Lines = conll_file.readlines()
 
 #collect positions of words, words and tags from the sample.conll file
