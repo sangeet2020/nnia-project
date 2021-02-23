@@ -24,7 +24,10 @@ The repository contains necessary scripts and data concerning NNIA final project
 8.  README.md
 
 ## General information
-TODO
+-   Prepare the envrionment to use:
+    ```
+    conda env update --file environment.yml
+    ```
 
 ## Usage 
 ### Data Preprocessing
