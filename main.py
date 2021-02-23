@@ -1,12 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# @Author: Sangeet Sagar
-# @Date:   2021-02-23 01:20:48
-# @Email:  sasa00001@stud.uni-saarland.de
-# @Organization: Universität des Saarlandes
-# @Last Modified time: 2021-02-23 01:27:38
-
 
 import re
 from collections import defaultdict 
