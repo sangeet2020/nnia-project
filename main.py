@@ -1,3 +1,13 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# @Author: Sangeet Sagar
+# @Date:   2021-02-23 01:20:48
+# @Email:  sasa00001@stud.uni-saarland.de
+# @Organization: Universität des Saarlandes
+# @Last Modified time: 2021-02-23 01:27:38
+
+
 import re
 from collections import defaultdict 
 
@@ -58,7 +68,9 @@ for key in tags_list.keys():
 file_info = open("sample.info", "w")
 file_info.writelines("Max sequence length: " + str(max_len) + '\n')
 file_info.writelines("Min sequence length: "+str(min_len) + '\n')
-file_info.writelines("Mean sequnce length"+ str(acc_seq/num_seq)+ '\n')
-file_info.writelines("Number of sequnces: "+str(num_seq)+ '\n')
-file_info.writelines("Tags: \n" +str(tags_list)+ '\n')
+file_info.writelines("Mean sequnce length: "+ str(acc_seq/num_seq)+ '\n')
+file_info.writelines("Number of sequnces: "+str(num_seq)+ '\n\n')
+file_info.writelines("Tags: \n\n")
+for k, v in tags_list.items():
+    file_info.writelines(str(k)+'\t'+str(v)+'\n')
 file_info.close()
