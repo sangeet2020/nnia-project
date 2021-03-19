@@ -3,9 +3,9 @@
 
 # @Author: Zena Al Khalili, Sangeet Sagar
 # @Date:   2021-02-23 01:52:54
-# @Email:  {zeal00001,sasa00001}@stud.uni-saarland.de
+# @Email:  zeal00001@stud.uni-saarland.de
 # @Organization: Universität des Saarlandes
-# @Last Modified time: 2021-02-23 02:06:09
+# @Last Modified time: 2021-03-18 01:32:15
 
 
 """
@@ -17,10 +17,6 @@ import sys
 import argparse
 import re
 from collections import defaultdict 
-
-
-def my_function(arg_1, arg_2, args):
-    """ purpose of my function """
 
 
 def main():
@@ -78,17 +74,17 @@ def main():
                 
     # get percentage of the words that have these tags.
     for key in tags_list.keys():
-        tags_list[key] = round(tags_list[key]/ words_count,2)*100   
+        tags_list[key] = (tags_list[key]/ words_count)*100   
 
     #write the inforamtion above on sample.info
     file_info = open(args.out_dir + "/sample.info", "w")
     file_info.writelines("Max sequence length: " + str(max_len) + '\n')
     file_info.writelines("Min sequence length: "+str(min_len) + '\n')
-    file_info.writelines("Mean sequnce length: "+ str(acc_seq/num_seq)+ '\n')
+    file_info.writelines("Mean sequnce length: {:6.2f} ".format(acc_seq/num_seq)+ '\n')
     file_info.writelines("Number of sequnces: "+str(num_seq)+ '\n\n')
     file_info.writelines("Tags: \n\n")
     for k, v in tags_list.items():
-        file_info.writelines(str(k)+'\t'+str(v)+'\n')
+        file_info.writelines(str(k)+'\t'+"{:.2f}%".format(v)+'\n')
     file_info.close()
     print("Results saved in "+ args.out_dir+ '\n' + 'Done')
 
