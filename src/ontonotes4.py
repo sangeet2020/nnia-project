@@ -5,7 +5,7 @@
 # @Date:   1970-01-01 01:00:00
 # @Email:  sasa00001@stud.uni-saarland.de
 # @Organization: Universität des Saarlande
-# @Last Modified time: 2021-03-19 17:28:57
+# @Last Modified time: 2021-03-20 19:48:28
 
 
 """Ontonotes4.0 data loading script from .tsv file"""
@@ -17,6 +17,7 @@ import os
 import datasets
 
 
+
 class Ontonotes(datasets.GeneratorBasedBuilder):
     """Onetonotes4.0 data"""
 
@@ -26,14 +27,21 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
     ]
 
     # DEFAULT_CONFIG_NAME = "first_domain"  # It's not mandatory to have a default configuration. Just use one if it make sense.
-
+    def __init__(self, **kwargs):
+        print("********************__init__")
+        super().__init__(**kwargs)
+        
+        # self.seed = config["seed"]
+        
+        
     def _info(self):
+        print("********************_info")
         features = datasets.Features(
             {
-                "sent_id": datasets.Value("string"),
+                "sent_id": datasets.Value("int32"),
                 "triplet": datasets.features.Sequence(
                     {
-                        "id": datasets.Value("string"),
+                        "id": datasets.Value("int32"),
                         "token": datasets.Value("string"),
                         "pos_tag": datasets.Value("string")    
                     }                    
@@ -48,37 +56,44 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
             supervised_keys=None,
         )
 
-    def _split_generators(self, dl_manager, data):
+    def _split_generators(self, data):
+        print("********************_split_generators")
         """Returns SplitGenerators."""
         
+        
+        self.extract_data(filepath="../data/sample.conll")
+    
+        print("********** I am here")
+        # import pdb; pdb.set_trace()
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
                 # These kwargs will be passed to _generate_examples
+                
                 gen_kwargs={
-                    "data": data[int(0.0*len(data)):int(0.8*len(data))],
+                    "data": self.data[int(0.0*len(self.data)):int(0.8*len(self.data))],
                 },
             ),
             datasets.SplitGenerator(
                 name=datasets.Split.TEST,
                 # These kwargs will be passed to _generate_examples
                 gen_kwargs={
-                    "data": data[int(0.8*len(data)):int(0.9*len(data))],
+                    "data": self.data[int(0.8*len(self.data)):int(0.9*len(self.data))],
                 },
             ),
             datasets.SplitGenerator(
                 name=datasets.Split.VALIDATION,
                 # These kwargs will be passed to _generate_examples
                 gen_kwargs={
-                    "data": data[int(0.9*len(data)):int(1.0*len(data))],
+                    "data": self.data[int(0.9*len(self.data)):int(1.0*len(self.data))],
                 },
             ),
         ]
 
-    def _generate_examples(self, filepath):
-        """ Yields examples as (key, example) tuples. """
-
-        data = []
+    
+    def extract_data(self, filepath):
+        print("**********************extract_data")
+        self.data = []
         buffer = []
         sent_id = 0
         with open(filepath, encoding="utf-8") as f:
@@ -96,10 +111,11 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
                             }
                             
                         )
+                        
                     else:
                         sent_id += 1
-                        raw = " ".join(pair["token"] for item in buffer) 
-                        data.append(
+                        raw = " ".join(item["token"] for item in buffer) 
+                        self.data.append(
                             {
                                 "sent_id": sent_id,
                                 "triplet": buffer,
@@ -107,12 +123,31 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
                             }
                             
                         )
-                    yield {
-                        "sent_id": sent_id,
-                        "triplet": {
-                            "id": buffer["id"],
-                            "token": buffer["token"],
-                            "pos_tag": buffer["pos_tag"]
-                        },
-                        "raw": raw
-                    }
+                        buffer = []
+
+    
+    def _generate_examples(self, data):
+        """ Yields examples as (key, example) tuples. """
+        print("********************_generate_examples")
+        
+        for id, item in enumerate(data):
+            # import pdb; pdb.set_trace();
+            # print(item)
+            
+            yield id, {
+                "sent_id": item["sent_id"],
+                "triplet": {
+                    "id": [i["id"] for i in item["triplet"]],
+                    "token": [i["token"] for i in item["triplet"]],
+                    "pos_tag": [i["pos_tag"] for i in item["triplet"]]
+                },
+                "raw": item["raw"]
+            }
+
+
+
+def main():
+    dataset = datasets.load_dataset('ontonotes4.py', data_files='../data/sample.conll')          
+    import pdb; pdb.set_trace();     
+if __name__ == "__main__":
+    main()
