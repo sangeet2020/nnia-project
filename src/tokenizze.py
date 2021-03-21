@@ -21,6 +21,7 @@ import pdb
 import datasets
 import torch
 from collections import defaultdict
+import pickle
 
 MAX_SEQ_LENGTH = 64
 DEVICE = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
@@ -67,8 +68,8 @@ def main():
     """ main method """
     args = parse_arguments()
     # os.makedirs(args.out_dir, exist_ok=True)
-    dataset = datasets.load_dataset("ontonotes4.py", data_files="../data/sample.conll")
-    
+    dataset = datasets.load_dataset('ontonotes4.py", data_files="../data/sample.conll")
+
     # Determine maximum sequence length
     train_sents = [item["token"] for item in dataset["train"]["triplet"]]
     train_tags = [item["pos_tag"] for item in dataset["train"]["triplet"]]
@@ -121,10 +122,9 @@ def main():
                                                     max_length = MAX_SEQ_LENGTH,
                                                     return_tensors = 'pt'
                                                     ))
-            # pdb.set_trace()
+
     encoded_tokens = [item["input_ids"] for id, item in data["train"].items()]
 
-    # config = BertConfig.from_pretrained( 'bert-base-cased', output_hidden_states=True)   
     model = BertModel.from_pretrained("bert-base-cased",  output_hidden_states=True)
     model.to(DEVICE)
     model.eval()
@@ -132,24 +132,23 @@ def main():
     sents_embeddings = []
 
     with torch.no_grad():
-        for id, item in data["train"].items():
-            outputs = model(item["input_ids"],  output_hidden_states=True)
+        for  item in encoded_tokens:
+            outputs = model(torch.LongTensor(item).to(DEVICE), output_hidden_states=True)
             embed = outputs.hidden_states[0]
+            # embedding = torch.reshape(embed,(len(item["input_ids"]),-1))
                 
             sents_embeddings.append({
-                **item,
+                'sent':item,
                 "embedding": embed
             })
-    print(sents_embeddings[0]['input_ids'].size())
+    print(sents_embeddings[0]['sent'].size())
     print(sents_embeddings[0]['embedding'].size())
-    # pdb.set_trace()
-    # for i,v in data["train"].items():print(len(v["input_ids"][1]))
-    # # One-hot encode labels
-    # train_labels = to_categorical(train_labels_ids, num_classes=n_tags)
-    # test_labels = to_categorical(test_labels_ids, num_classes=n_tags)
-    
-    # pdb.set_trace()
-    # pdb.set_trace()
+
+    # write embeddings to a pickle file for later use
+    outfile = open('embeddings','wb')
+    pickle.dump(sents_embeddings, outfile)
+    outfile.close()
+   
 
 def parse_arguments():
     """ parse arguments """
