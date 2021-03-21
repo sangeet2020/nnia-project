@@ -52,7 +52,7 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
     def _split_generators(self, data):
         """Returns SplitGenerators."""
         
-        self.extract_data(filepath="../ontonetes-4.0/")
+        self.extract_data(filepath=self.config.data_files)
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
