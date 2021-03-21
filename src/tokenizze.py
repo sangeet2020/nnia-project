@@ -29,6 +29,19 @@ def my_function(arg_1, arg_2, args):
     """ purpose of my function """
 
 def smart_split(sentences, pos_tags, max):
+    """Smart split makes sure, when you truncate input sequence you dont loose data.
+    To do this, it breaks the input sequence upto MAX_SEQ_LENGTH and the reaming part of the sequence 
+    becomes a new sequence.
+    For example, if MAX_SEQUENCE_LENGTH=64, a sentence with length 150 splits in 3 sentences: 150=64+64+22
+
+    Args:
+        sentences ([type]): [description]
+        pos_tags ([type]): [description]
+        max ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     new_sents=[]
     new_tags=[]
     for data in sentences:
