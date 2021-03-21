@@ -67,7 +67,7 @@ def main():
     """ main method """
     args = parse_arguments()
     # os.makedirs(args.out_dir, exist_ok=True)
-    dataset = datasets.load_dataset(r"C:\Users\zeina\Desktop\Saarland-Uni\courses\NNs\Project\nnia-project\src\ontonotes4.py", data_files="C:\\Users\\zeina\\Desktop\\Saarland-Uni\\courses\\NNs\\Project\\nnia-project\\data\\sample.conll")
+    dataset = datasets.load_dataset("ontonotes4.py", data_files="../data/sample.conll")
     
     # Determine maximum sequence length
     train_sents = [item["token"] for item in dataset["train"]["triplet"]]

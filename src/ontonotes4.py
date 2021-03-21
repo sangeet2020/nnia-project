@@ -61,7 +61,7 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
         """Returns SplitGenerators."""
         
         
-        self.extract_data(filepath=r"C:\Users\zeina\Desktop\Saarland-Uni\courses\NNs\Project\nnia-project\data\sample.conll")
+        self.extract_data(filepath=r"../data/sample.conll")
     
         print("********** I am here")
         # import pdb; pdb.set_trace()
