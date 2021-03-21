@@ -53,10 +53,7 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
     def _split_generators(self, data):
         print("********************_split_generators")
         """Returns SplitGenerators."""
-        
-        
-        self.extract_data(filepath="../ontonetes-4.0/")
-    
+            
         print("********** I am here")
         # import pdb; pdb.set_trace()
         return [
