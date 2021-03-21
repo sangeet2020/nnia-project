@@ -54,7 +54,6 @@ def smart_split(sentences, pos_tags, max):
     
     return new_sents, new_tags
 
-
 def bert_labels(labels):
     train_label_bert = []
     train_label_bert.append('-PAD-')
@@ -118,7 +117,8 @@ def main():
                 data[split].setdefault(id, tokenizer(sentence,
                                                     truncation=True, 
                                                     pad_to_max_length=True, 
-                                                    max_length = MAX_SEQ_LENGTH
+                                                    max_length = MAX_SEQ_LENGTH,
+                                                    return_tensors = 'pt'
                                                     ))
             # pdb.set_trace()
     encoded_tokens = [item["input_ids"] for id, item in data["train"].items()]
