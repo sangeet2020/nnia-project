@@ -131,8 +131,6 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
         print("********************_generate_examples")
         
         for id, item in enumerate(data):
-            # import pdb; pdb.set_trace();
-            # print(item)
             
             yield id, {
                 "sent_id": item["sent_id"],
@@ -143,11 +141,3 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
                 },
                 "raw": item["raw"]
             }
-
-
-
-def main():
-    dataset = datasets.load_dataset('ontonotes4.py', data_files='../data/sample.conll')          
-    import pdb; pdb.set_trace();     
-if __name__ == "__main__":
-    main()
