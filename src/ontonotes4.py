@@ -8,7 +8,7 @@
 # @Last Modified time: 2021-03-20 19:48:28
 
 
-"""Ontonotes4.0 data loading script from .tsv file"""
+"""Ontonotes4.0 data loading script from CoNLL files"""
 
 from __future__ import absolute_import, division, print_function
 import csv
@@ -27,9 +27,8 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
     BUILDER_CONFIGS = [
         datasets.BuilderConfig(name="Onetonotes4.0", version=4.0, description="Onetonotes4.0 dataset")
     ]
-        
+    
     def _info(self):
-        print("********************_info")
         features = datasets.Features(
             {
                 "sent_id": datasets.Value("int32"),
@@ -51,11 +50,9 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
         )
 
     def _split_generators(self, data):
-        print("********************_split_generators")
         """Returns SplitGenerators."""
-            
-        print("********** I am here")
-        # import pdb; pdb.set_trace()
+        
+        self.extract_data(filepath="../ontonetes-4.0/")
         return [
             datasets.SplitGenerator(
                 name=datasets.Split.TRAIN,
@@ -83,13 +80,11 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
 
     
     def extract_data(self, filepath):
-        print("**********************extract_data")
         self.data = []
         buffer = []
         sent_id = 0
         os.chdir(filepath)
         for file in glob.glob("*.gold_conll"):
-            # pdb.set_trace()
             with open(file, encoding="utf-8") as f:
                 for line in f:
                     if line.startswith('#'):
@@ -121,12 +116,8 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
     
     def _generate_examples(self, data):
         """ Yields examples as (key, example) tuples. """
-        print("********************_generate_examples")
         
         for id, item in enumerate(data):
-            # import pdb; pdb.set_trace();
-            # print(item)
-            
             yield id, {
                 "sent_id": item["sent_id"],
                 "triplet": {
