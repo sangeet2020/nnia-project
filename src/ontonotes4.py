@@ -14,6 +14,8 @@ from __future__ import absolute_import, division, print_function
 import csv
 import json
 import os
+import glob
+import pdb
 import datasets
 
 
@@ -25,14 +27,6 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
     BUILDER_CONFIGS = [
         datasets.BuilderConfig(name="Onetonotes4.0", version=4.0, description="Onetonotes4.0 dataset")
     ]
-
-    # DEFAULT_CONFIG_NAME = "first_domain"  # It's not mandatory to have a default configuration. Just use one if it make sense.
-    def __init__(self, **kwargs):
-        print("********************__init__")
-        super().__init__(**kwargs)
-        
-        # self.seed = config["seed"]
-        
         
     def _info(self):
         print("********************_info")
@@ -61,7 +55,7 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
         """Returns SplitGenerators."""
         
         
-        self.extract_data(filepath="../data/sample.conll")
+        self.extract_data(filepath="../ontonetes-4.0/")
     
         print("********** I am here")
         # import pdb; pdb.set_trace()
@@ -96,34 +90,36 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
         self.data = []
         buffer = []
         sent_id = 0
-        with open(filepath, encoding="utf-8") as f:
-            for line in f:
-                if line.startswith('#'):
-                    pass
-                else:
-                    cols = line.strip("\n").split()
-                    if len(cols) != 0:
-                        buffer.append(
-                            {
-                                "id": cols[2],
-                                "token": cols[3],
-                                "pos_tag": cols[4]    
-                            }
-                            
-                        )
-                        
+        os.chdir(filepath)
+        for file in glob.glob("*.gold_conll"):
+            # pdb.set_trace()
+            with open(file, encoding="utf-8") as f:
+                for line in f:
+                    if line.startswith('#'):
+                        pass
                     else:
-                        sent_id += 1
-                        raw = " ".join(item["token"] for item in buffer) 
-                        self.data.append(
-                            {
-                                "sent_id": sent_id,
-                                "triplet": buffer,
-                                "raw": raw    
-                            }
+                        cols = line.strip("\n").split()
+                        if len(cols) != 0:
+                            buffer.append(
+                                {
+                                    "id": cols[2],
+                                    "token": cols[3],
+                                    "pos_tag": cols[4]    
+                                }
+                            )
                             
-                        )
-                        buffer = []
+                        else:
+                            sent_id += 1
+                            raw = " ".join(item["token"] for item in buffer) 
+                            self.data.append(
+                                {
+                                    "sent_id": sent_id,
+                                    "triplet": buffer,
+                                    "raw": raw    
+                                }
+                                
+                            )
+                            buffer = []
 
     
     def _generate_examples(self, data):
@@ -131,6 +127,8 @@ class Ontonotes(datasets.GeneratorBasedBuilder):
         print("********************_generate_examples")
         
         for id, item in enumerate(data):
+            # import pdb; pdb.set_trace();
+            # print(item)
             
             yield id, {
                 "sent_id": item["sent_id"],
