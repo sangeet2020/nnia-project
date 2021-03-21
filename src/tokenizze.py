@@ -67,7 +67,7 @@ def main():
     """ main method """
     args = parse_arguments()
     # os.makedirs(args.out_dir, exist_ok=True)
-    dataset = datasets.load_dataset('ontonotes4.py', data_files='../data/sample.conll')
+    dataset = datasets.load_dataset(r"C:\Users\zeina\Desktop\Saarland-Uni\courses\NNs\Project\nnia-project\src\ontonotes4.py", data_files="C:\\Users\\zeina\\Desktop\\Saarland-Uni\\courses\\NNs\\Project\\nnia-project\\data\\sample.conll")
     
     # Determine maximum sequence length
     train_sents = [item["token"] for item in dataset["train"]["triplet"]]
@@ -110,37 +110,47 @@ def main():
             if split not in data:
                 data[split] = {id: tokenizer(sentence,
                                             truncation=True,
-                                            pad_to_max_length=True,
-                                            max_length = MAX_SEQ_LENGTH
+                                            padding=True,
+                                            max_length = MAX_SEQ_LENGTH,
+                                            return_tensors = 'pt'
                 )}
             else:
                 data[split].setdefault(id, tokenizer(sentence,
                                                     truncation=True, 
-                                                    pad_to_max_length=True, 
+                                                    padding=True, 
                                                     max_length = MAX_SEQ_LENGTH,
                                                     return_tensors = 'pt'
                                                     ))
             # pdb.set_trace()
     encoded_tokens = [item["input_ids"] for id, item in data["train"].items()]
-    model = BertModel.from_pretrained("bert-base-cased", 
-                                    output_hidden_states = True)
+
+    # config = BertConfig.from_pretrained( 'bert-base-cased', output_hidden_states=True)   
+    model = BertModel.from_pretrained("bert-base-cased",  output_hidden_states=True)
     model.to(DEVICE)
     model.eval()
-    # pdb.set_trace()
-    with torch.no_grad():
-        outputs = model(torch.LongTensor(encoded_tokens).to(DEVICE))
 
-    pdb.set_trace()
-    
+    sents_embeddings = []
+
+    with torch.no_grad():
+        for id, item in data["train"].items():
+            outputs = model(item["input_ids"],  output_hidden_states=True)
+            embed = outputs.hidden_states[0]
+                
+            sents_embeddings.append({
+                **item,
+                "embedding": embed
+            })
+    print(sents_embeddings[0]['input_ids'].size())
+    print(sents_embeddings[0]['embedding'].size())
+   
+    # pdb.set_trace()
     # for i,v in data["train"].items():print(len(v["input_ids"][1]))
     # # One-hot encode labels
     # train_labels = to_categorical(train_labels_ids, num_classes=n_tags)
     # test_labels = to_categorical(test_labels_ids, num_classes=n_tags)
     
-    pdb.set_trace()
-
-    
-    pdb.set_trace()
+    # pdb.set_trace()
+    # pdb.set_trace()
 
 def parse_arguments():
     """ parse arguments """
