@@ -25,9 +25,9 @@ import numpy as np
 from collections import defaultdict
 from transformers import AutoTokenizer, BertModel
 
-MAX_SEQ_LENGTH = 64 # probably unused
-DEVICE = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
-# DEVICE = torch.device("cpu")
+MAX_SEQ_LENGTH = 32 # probably unused
+# DEVICE = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
+DEVICE = torch.device("cpu")
 
 def load_text_batchwise(data, args):
     batch_size = args.batch_size
@@ -45,9 +45,8 @@ def select_split(dataset, split):
 def bert_tokenizer(tokenizer, sents):
     # We will use the ready split tokens
     sents_encoding = tokenizer(sents,is_split_into_words=True,
-                                max_length=MAX_SEQ_LENGTH,
                                 return_offsets_mapping=True,
-                                padding="max_length",
+                                padding=True,
                                 truncation=True,
                                 return_tensors='pt')
     return sents_encoding
@@ -101,7 +100,7 @@ def main():
     data_encoded["train"] = bert_tokenizer(tokenizer, train_sents)
     data_encoded["test"] = bert_tokenizer(tokenizer, test_sents)
     data_encoded["validation"] = bert_tokenizer(tokenizer, valid_sents)
-
+    
     # Aligning tokens and tags. Set the tags for the tokens we wish to ignore by setting to -100.
     train_tags_encoded =  smart_tags_encoder(tag2id, train_tags, data_encoded["train"])
     test_tags_encoded =  smart_tags_encoder(tag2id, test_tags, data_encoded["test"])
