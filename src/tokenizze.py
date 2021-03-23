@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# @Author: Sangeet Sagar
+# @Author: Zena Al Khalili, Sangeet Sagar
 # @Date:   1970-01-01 01:00:00
 # @Email:  sasa00001@stud.uni-saarland.de
 # @Organization: Universität des Saarlande
@@ -26,8 +26,8 @@ from collections import defaultdict
 from transformers import AutoTokenizer, BertModel
 
 MAX_SEQ_LENGTH = 32 # probably unused
-# DEVICE = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
-DEVICE = torch.device("cpu")
+DEVICE = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
+# DEVICE = torch.device("cpu")
 
 def load_text_batchwise(data, args):
     batch_size = args.batch_size
@@ -70,6 +70,7 @@ def smart_tags_encoder(tag2id, tags, encodings):
 def main():
     """ main method """
     args = parse_arguments()
+    net_start = time.time()
     root = subprocess.Popen("git rev-parse --show-toplevel", shell=True, stdout=subprocess.PIPE)
     TOP_DIR = root.stdout.read()
     TOP_DIR = TOP_DIR.strip().decode("utf-8")
@@ -163,8 +164,8 @@ def main():
             pickle.dump(sents_embeddings, outfile)
             outfile.close()
             print("Embeddings saved at "+str(out_dir+"embeddings_ontonotes.pkl"))
-    
-    pdb.set_trace()
+    net_end = time.time()
+    print("Total runtime: %.3f s" % (net_end - net_start))
     print("--Done--")
 
 def parse_arguments():
