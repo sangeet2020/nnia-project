@@ -74,10 +74,10 @@ def bert_tokenizer(tokenizer, sents):
     # We will use the ready split tokens
     sents_encoding = tokenizer(sents,is_split_into_words=True,
                                 return_offsets_mapping=True,
-                                add_special_tokens=True,
+                                padding="max_length",
                                 truncation=True,
-                                padding=True,
                                 return_tensors='pt')
+    pdb.set_trace()
     return sents_encoding
 
 def smart_tags_encoder(tag2id, tags, encodings):
