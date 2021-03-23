@@ -77,7 +77,7 @@ def bert_tokenizer(tokenizer, sents):
                                 padding="max_length",
                                 truncation=True,
                                 return_tensors='pt')
-    pdb.set_trace()
+
     return sents_encoding
 
 def smart_tags_encoder(tag2id, tags, encodings):
