@@ -88,8 +88,6 @@ def smart_tags_encoder(tag2id, tags, encodings):
         # create an empty array of -100
         doc_enc_labels = np.ones(len(doc_offset),dtype=int) * -100
         arr_offset = np.array(doc_offset)
-
-        # set labels whose first offset position is 0 and the second is not 0
     
         doc_enc_labels[(arr_offset[:,0] == 0) & (arr_offset[:,1] != 0)] = doc_labels
         encoded_labels.append(doc_enc_labels.tolist())
@@ -169,65 +167,36 @@ def main():
                 for i, batch in enumerate(batched_enc_sents):
                     sents_embeddings = defaultdict()
                     outputs = model(torch.LongTensor(batch).to(DEVICE), output_hidden_states=True)
-                    # pdb.set_trace()
-                    ## Reference:
-                    ## https://mccormickml.com/2019/05/14/BERT-word-embeddings-tutorial/
-                    ## https://medium.com/analytics-vidhya/bert-word-embeddings-deep-dive-32f6214f02bf
-                    ## sum of all hidden states or we can do mean.
-                    # embed = torch.stack(outputs.hidden_states, dim=0).sum(0)
 
-                    # https://github.com/hanxiao/bert-as-service#q-bert-has-1224-layers-so-which-layer-are-you-talking-about
-                    # The second-to-last layer is what Han settled on as a reasonable sweet-spot.
-                    
-                    # use last hidden state as word embeddings
                     embed = outputs.hidden_states[0]
-        
-                    # sents_embeddings.append({
-                    #     'sent':batch,
-                    #     "embedding": embed
-                    # })
-                    # pdb.set_trace()
-                    try:
-                        sents_embeddings["labels"] = batched_enc_tags[i]
-                    except IndexError:
-                        pdb.set_trace()
+                    sents_embeddings["labels"] = batched_enc_tags[i]
                     sents_embeddings["embeddings"] = embed
-                    del outputs
-                    os.makedirs(out_dir, exist_ok=True)
-                    f_name = out_dir + "embeddings_" + split + "_batch_id_" + str(i) + ".pkl"
-                    outfile = open(f_name,'wb')
-                    pickle.dump(sents_embeddings, outfile)
-                    outfile.close()
-                    print("Embeddings saved at "+str(f_name))
+                    
+                    if args.save_emb:            
+                        os.makedirs(out_dir, exist_ok=True)
+                        f_name = out_dir + "embeddings_" + split + "_batch_id_" + str(i) + ".pkl"
+                        outfile = open(f_name,'wb')
+                        pickle.dump(sents_embeddings, outfile)
+                        outfile.close()
+                        print("Embeddings saved at "+str(f_name))
         print("{:d} batches processed".format(len(sents_embeddings)))
         
-        # print(sents_embeddings[0]['sent'].size())
-        # First dim: batch size (default 64), Second dim: number of encodings in a seq
-        # third dim: number of features for one encoding.
-        # print(sents_embeddings[0]['embedding'].size())            
-        # Dump embeddings
-        if args.save_emb:
-            # os.makedirs(out_dir, exist_ok=True)
-            # outfile = open(out_dir+"embeddings_ontonotes.pkl",'wb')
-            # pickle.dump(sents_embeddings, outfile)
-            # outfile.close()
-            # print("Embeddings saved at "+str(out_dir+"embeddings_ontonotes.pkl"))
-            
-            # Save encoded sequences, encoded tags and unique tags as pkl
-            outfile = open(out_dir+"data_encoded.pkl",'wb')
-            pickle.dump(data_encoded, outfile)
-            outfile.close()
-            print("Embeddings saved at "+str(out_dir+"data_encoded.pkl"))
-            
-            outfile = open(out_dir+"tags_encoded.pkl",'wb')
-            pickle.dump(tags_encoded, outfile)
-            outfile.close()
-            print("Embeddings saved at "+str(out_dir+"tags_encoded.pkl"))
-            
-            outfile = open(out_dir+"tag2id.pkl",'wb')
-            pickle.dump(tag2id, outfile)
-            outfile.close()
-            print("Embeddings saved at "+str(out_dir+"tag2id.pkl"))
+    
+    # Save encodings and tagid    
+    outfile = open(out_dir+"data_encoded.pkl",'wb')
+    pickle.dump(data_encoded, outfile)
+    outfile.close()
+    print("Embeddings saved at "+str(out_dir+"data_encoded.pkl"))
+    
+    outfile = open(out_dir+"tags_encoded.pkl",'wb')
+    pickle.dump(tags_encoded, outfile)
+    outfile.close()
+    print("Embeddings saved at "+str(out_dir+"tags_encoded.pkl"))
+    
+    outfile = open(out_dir+"tag2id.pkl",'wb')
+    pickle.dump(tag2id, outfile)
+    outfile.close()
+    print("Embeddings saved at "+str(out_dir+"tag2id.pkl"))
             
     net_end = time.time()
     print("Total runtime: %.3f s" % (net_end - net_start))

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# @Author: Sangeet Sagar
+# @Author: Zena Al Khalili, Sangeet Sagar
 # @Date:   1970-01-01 01:00:00
 # @Email:  sasa00001@stud.uni-saarland.de
 # @Organization: Universität des Saarlande
